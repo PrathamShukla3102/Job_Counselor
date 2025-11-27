@@ -69,8 +69,6 @@ def check():
     
 @app.route('/improvecv',methods=['POST'])
 def improvementcv():
-    
-
     if 'resume' not in request.files:
         return redirect(request.url)
 
@@ -79,20 +77,17 @@ def improvementcv():
         return redirect(request.url)
 
     if resume:
-        # Save the uploaded resume
         filename = str(uuid.uuid4()) + '.pdf'
         resume.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-          # Extract skills from the uploaded resume
+
         resume_text = input_pdf_text(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        print ("resume text : : ",resume_text)
-        pdf_filename = filename
-        # Get job description from the form
+        print("resume text : : ", resume_text)
 
         job_description = request.form['job_description']
-     # Get Gemini response for ATS recommendation
+
+        # Now this returns a JSON STRING
         gemini_response = get_gemini_response(job_description, resume_text)
         print(gemini_response)
-# Convert JSON string to Python dictionary
 
         try:
             data_dict = process_gemini_response(gemini_response)
@@ -101,12 +96,10 @@ def improvementcv():
             print(e)
             return redirect('/')
 
-        # Print the dictionary
         print(type(data_dict))
 
-
-
         return render_template('gemini_modal.html', data=data_dict)
+
 
 
  
